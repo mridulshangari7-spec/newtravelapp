@@ -2,5 +2,5 @@
 // Leave both empty to run the offline demo (data stays in this browser).
 window.CARRYON_CONFIG = {
   supabaseUrl: "https://vzmawkgrdaokxefyysdf.supabase.co",
-  supabaseAnonKey: ""
+  supabaseAnonKey: "sb_publishable_-zL07wq8Xa7wbCuNBevO-Q_m5GmJN6M"
 };
