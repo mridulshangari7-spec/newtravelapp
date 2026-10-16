@@ -19,13 +19,25 @@ Open `index.html` in a browser, or serve the folder: `python3 -m http.server`.
 
 Matching rule: same route, trip date on or before the deadline, and enough spare weight.
 
+## Cloud mode (Supabase)
+
+1. In Supabase, open **SQL Editor**, paste `supabase/schema.sql`, Run.
+2. Authentication > Providers > Email: for testing, turn **Confirm email** off.
+3. Put the project's anon (publishable) key into `src/config.js`. The URL is already set.
+4. Host the folder as a static site (GitHub Pages works). Opening `index.html` from disk also works.
+
+With the key set, login is email + password and trips, requests and deals are shared between users. With it empty, the app runs the offline demo. Never put a `service_role` key in this repo.
+
 ## Not built yet
 
-Real auth and ID/KYC, payments and escrow (e.g. Razorpay), chat, push notifications, and a shared backend (see `docs/schema.sql`). Legal review of customs and airline rules is needed before any real launch.
+Real ID/KYC, payments and escrow (e.g. Razorpay), chat, push notifications, and phone OTP (needs an SMS provider). Legal review of customs and airline rules is needed before any real launch.
 
 ## Files
 
 - `index.html`: shell
 - `src/data.js`: cities, prohibited list, deal stages, demo data
 - `src/app.js`: views, matching, safety gate, deal flow
+- `src/store.js`: demo (localStorage) and Supabase data layers
+- `src/config.js`: Supabase URL and anon key
+- `supabase/schema.sql`: tables, triggers and row level security
 - `src/styles.css`: mobile-first styles (white theme)
