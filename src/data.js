@@ -31,5 +31,6 @@ const SEED = {
     { id: "r2", name: "Isha R.", verified: true, item: "Handmade sweets (sealed, labelled)", valueInr: 1200, from: "Mumbai", to: "Delhi", by: "2026-10-21", weightKg: 1, rewardInr: 500 },
     { id: "r3", name: "Dev A.", verified: false, item: "Camera lens", valueInr: 22000, from: "Dubai", to: "Mumbai", by: "2026-11-01", weightKg: 1, rewardInr: 2200 }
   ],
-  deals: []
+  deals: [],
+  user: null
 };

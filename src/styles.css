@@ -1,5 +1,4 @@
-:root{--bg:#f6f7fb;--card:#fff;--ink:#14161f;--mute:#6a7085;--line:#e3e6ef;--brand:#5b4bff;--ok:#12a150;--warn:#c77700;--bad:#d33}
-@media (prefers-color-scheme:dark){:root{--bg:#10121a;--card:#181b27;--ink:#eef0f7;--mute:#98a0b8;--line:#2a2f42;--brand:#8a7dff}}
+:root{color-scheme:light;--bg:#ffffff;--card:#ffffff;--soft:#f4f5fa;--ink:#14161f;--mute:#6a7085;--line:#e3e6ef;--brand:#5b4bff;--ok:#12a150;--warn:#c77700;--bad:#d33}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:72px}
 .top{padding:16px;max-width:720px;margin:0 auto}
@@ -18,7 +17,7 @@ button.btn{background:var(--brand);color:#fff;border:0;border-radius:10px;paddin
 button.btn.ghost{background:none;color:var(--brand);border:1px solid var(--brand)}
 button.btn:disabled{opacity:.5;cursor:not-allowed}
 label{display:block;margin:10px 0 4px;font-size:14px;color:var(--mute)}
-input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit}
+input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--ink);font:inherit}
 .check{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:14px;color:var(--ink)}.check input{width:auto;margin-top:4px}
 .notice{border-left:4px solid var(--warn);padding:8px 12px;background:var(--card);border-radius:8px;font-size:14px;margin:10px 0}
 .steps{display:flex;gap:4px;margin:10px 0}.steps span{flex:1;height:6px;border-radius:3px;background:var(--line)}.steps span.done{background:var(--ok)}
@@ -26,3 +25,10 @@ input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--l
 h2{margin:16px 0 4px;font-size:18px}
 #toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.show{opacity:1}
+
+.card{box-shadow:0 1px 2px rgba(20,22,31,.05)}
+.me{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;background:var(--soft);border-radius:12px;padding:10px 12px;margin:4px 0 8px}
+.stars{display:flex;gap:4px}.stars button{border:0;background:none;font-size:26px;cursor:pointer;color:var(--line);padding:0}.stars button.on{color:#f5a623}
+.login{max-width:420px;margin:24px auto}
+.login h1{margin:0 0 4px;font-size:26px}
+[hidden]{display:none!important}

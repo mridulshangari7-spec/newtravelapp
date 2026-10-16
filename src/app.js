@@ -95,6 +95,7 @@ function renderRequest() {
 
 // Mandatory safety/customs gate before any deal is created.
 function openGate(kind, id) {
+  if (!state.user.verified) return toast("Verify your ID first to make a deal");
   const item = kind === "req" ? state.requests.find(r => r.id === id) : state.trips.find(t => t.id === id);
   const intl = isIntl(item.from, item.to);
   const v = document.getElementById("view");
@@ -136,19 +137,58 @@ function renderDeals() {
     <div class="row"><b>${STAGES[d.stage]}</b>
       ${d.stage < STAGES.length - 1 ? `<button class="btn" data-advance="${d.id}">Mark: ${STAGES[d.stage + 1]}</button>` : `<span class="pill ok">Complete</span>`}
     </div>
+    ${d.stage === STAGES.length - 1 ? `<div class="row"><span class="mute">Rate ${esc(d.counterpart)}</span><div class="stars">${[1,2,3,4,5].map(n => `<button class="${d.rating >= n ? "on" : ""}" data-rate="${n}" data-deal="${d.id}" aria-label="${n} star">★</button>`).join("")}</div></div>` : ""}
     <p class="mute">Money is held by the platform until delivery is confirmed (simulated in this demo).</p>
   </div>`).join("");
 }
 
+// Demo sign-in: any 10-digit number, OTP is always 1234. Replace with real auth + KYC later.
+function renderLogin(step = 1, phone = "", name = "") {
+  const v = document.getElementById("view");
+  document.getElementById("tabs").hidden = true;
+  v.innerHTML = `<div class="login card">
+    <h1>Welcome to CarryOn</h1>
+    <p class="mute">Sign in to list trips, post requests and make deals.</p>
+    ${step === 1 ? `<form id="loginForm">
+      <label for="lName">Your name</label><input id="lName" maxlength="40" required value="${esc(name)}">
+      <label for="lPhone">Mobile number</label><input id="lPhone" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10 digits" required value="${esc(phone)}">
+      <button class="btn" style="margin-top:12px;width:100%">Send OTP</button></form>`
+    : `<form id="otpForm"><div class="notice">Demo: enter OTP <b>1234</b>.</div>
+      <label for="lOtp">OTP sent to +91 ${esc(phone)}</label><input id="lOtp" inputmode="numeric" maxlength="4" required>
+      <button class="btn" style="margin-top:12px;width:100%">Verify and continue</button></form>`}
+  </div>`;
+  const lf = document.getElementById("loginForm"), of = document.getElementById("otpForm");
+  if (lf) lf.onsubmit = e => { e.preventDefault(); renderLogin(2, document.getElementById("lPhone").value, document.getElementById("lName").value.trim()); };
+  if (of) of.onsubmit = e => {
+    e.preventDefault();
+    if (document.getElementById("lOtp").value !== "1234") return toast("Wrong OTP");
+    state.user = { name: name || "You", phone, verified: false }; save(); render();
+  };
+}
+
+function meStrip() {
+  const u = state.user;
+  return `<div class="me"><span>Hi, <b>${esc(u.name)}</b> ${u.verified ? `<span class="pill ok">ID verified</span>` : `<span class="pill warn">ID not verified</span>`}</span>
+    <span>${u.verified ? "" : `<button class="btn ghost" id="verifyBtn">Verify ID</button> `}<button class="btn ghost" id="logoutBtn">Sign out</button></span></div>`;
+}
+
 function render() {
+  if (!state.user) return renderLogin();
+  document.getElementById("tabs").hidden = false;
   document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
   const v = document.getElementById("view");
-  v.innerHTML = { browse: renderBrowse, trip: renderTrip, request: renderRequest, deals: renderDeals }[tab]();
+  v.innerHTML = meStrip() + { browse: renderBrowse, trip: renderTrip, request: renderRequest, deals: renderDeals }[tab]();
   bind();
 }
 
 function bind() {
   const q = s => document.querySelector(s);
+  if (q("#verifyBtn")) q("#verifyBtn").onclick = () => { state.user.verified = true; save(); render(); toast("ID verified (demo)"); };
+  if (q("#logoutBtn")) q("#logoutBtn").onclick = () => { state.user = null; save(); render(); };
+  document.querySelectorAll("[data-rate]").forEach(b => b.onclick = () => {
+    const d = state.deals.find(x => x.id === b.dataset.deal);
+    if (d) { d.rating = +b.dataset.rate; save(); render(); toast("Thanks for rating"); }
+  });
   if (q("#fScope")) {
     q("#fScope").onchange = e => { filter.scope = e.target.value; render(); };
     q("#fFrom").onchange = e => { filter.from = e.target.value; render(); };
@@ -164,13 +204,13 @@ function bind() {
   if (tf) tf.onsubmit = e => {
     e.preventDefault(); const f = Object.fromEntries(new FormData(tf));
     if (f.from === f.to) return toast("From and To must differ");
-    state.trips.unshift({ id: uid("t"), name: "You", verified: true, rating: 5, from: f.from, to: f.to, date: f.date, capacityKg: +f.capacityKg, feeInr: +f.feeInr });
+    state.trips.unshift({ id: uid("t"), name: state.user.name, verified: state.user.verified, rating: 5, from: f.from, to: f.to, date: f.date, capacityKg: +f.capacityKg, feeInr: +f.feeInr });
     save(); tab = "browse"; render(); toast("Trip published");
   };
   if (rf) rf.onsubmit = e => {
     e.preventDefault(); const f = Object.fromEntries(new FormData(rf));
     if (f.from === f.to) return toast("From and To must differ");
-    state.requests.unshift({ id: uid("r"), name: "You", verified: true, item: f.item, valueInr: +f.valueInr, from: f.from, to: f.to, by: f.by, weightKg: +f.weightKg, rewardInr: +f.rewardInr });
+    state.requests.unshift({ id: uid("r"), name: state.user.name, verified: state.user.verified, item: f.item, valueInr: +f.valueInr, from: f.from, to: f.to, by: f.by, weightKg: +f.weightKg, rewardInr: +f.rewardInr });
     save(); tab = "browse"; render(); toast("Request posted");
   };
 }
